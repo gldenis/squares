@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .wrapper-squares section {
+            text-align: center;
+            display: inline-block;
+            margin: 60px;
+            position: relative;
+
+        }
+
+        .wrapper-squares table {
+            border: 1px solid #48AAE6;
+            margin: -4px;
+        }
+
+        .wrapper-squares td {
+            width: 50px;
+            height: 50px;
+            background: #48AAE6;
+            border-collapse: collapse;
+            box-sizing: border-box;
+        }
+
+        .wrapper-squares input {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 2px solid transparent;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .wrapper-squares .add {
+            background: #F3A500;
+            transition: .5s;
+        }
+
+        .wrapper-squares .add:hover {
+            background: #F6C052;
+        }
+
+        .wrapper-squares  .del {
+            background: #B20000;
+            transition: .2s;
+            opacity: 0;
+            visibility: visible;
+        }
+
+        .wrapper-squares .del:hover {
+            background: #CA4C49;
+            transition: .5s;
+        }
+
+        .wrapper-squares .add_row {
+            bottom: -56px;
+            left: -1px;
+        }
+
+        .wrapper-squares .add_column {
+            top: -1px;
+            right: -56px;
+        }
+
+        .wrapper-squares .delete_row {
+            left: -56px;
+            top: 0px;
+        }
+
+        .wrapper-squares .delete_column {
+            top: -56px;
+            left: 0;
+        }
+
+        #squares .disabled {
+            opacity: 0;
+            visibility: hidden;
+            transition: .2s;
+        }
+
+        .wrapper-squares section:hover > .del {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper-squares">
+    <section id="squares">
+
+        <input type="button" class="add add_row" value="+" onClick="addRow()"/>
+        <input type="button" class="add add_column" value="+" onClick="addColumn()"/>
+        <input type="button" class="del delete_column" value="-" onClick="deleteColumn()"/>
+        <input type="button" class="del delete_row" value="-" onClick="deleteLastRows()"/>
+
+
+        <table id="my_table">
+
+            <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+
+
+<script>
+    // Add row to the HTML table
+
+
+    function addRow() {
+        var table = document.getElementById('my_table');
+        var rows = table.rows
+        var rowCount = table.rows.length;
+        var columnCount = table.rows[0].cells.length;
+        var row = table.insertRow(rowCount);
+        var pos = document.getElementsByClassName('delete_row')[0].offsetTop;
+
+        for (var i = 1; i <= columnCount; i++) {
+            var newCel = row.insertCell(i - 1);
+        }
+        document.getElementsByClassName('delete_row')[0].style.top = pos + 52 + 'px'
+        document.getElementsByClassName('delete_row')[0].classList.remove('disabled');
+    }
+
+
+    // append column to the HTML table
+    function addColumn() {
+        var table = document.getElementById('my_table');
+        var columnCount = table.rows[0].cells.length;
+        var tblBodyObj = table.tBodies[0];
+        var rowCount = table.rows.length;
+        var rows = table.rows;
+        var pos = document.getElementsByClassName('delete_column')[0].offsetLeft
+
+
+        for (var i = 0; i < rowCount; i++) {
+            var newCell = tblBodyObj.rows[i].insertCell(-1);
+        }
+        document.getElementsByClassName('delete_column')[0].style.left = pos + 52 + 'px'
+        document.getElementsByClassName('delete_column')[0].classList.remove('disabled');
+    }
+
+    // delete table rows with index greater then 0
+    function deleteLastRows() {
+        var tbl = document.getElementById('my_table');
+        var pos = document.getElementsByClassName('delete_row')[0].offsetTop;
+        if (tbl.rows.length > 2) {
+            tbl.deleteRow(pos / 52);
+            if (pos > 0) {
+                document.getElementsByClassName('delete_row')[0].style.top = pos - 52 + 'px'
+            }
+        }
+        else if (tbl.rows.length = 2) {
+            tbl.deleteRow(pos / 52);
+            document.getElementsByClassName('delete_row')[0].classList.add('disabled')
+        }
+    }
+
+    // delete last table column
+    function deleteColumn() {
+        var allRows = document.getElementById('my_table').rows;
+        for (var i = 0; i < allRows.length; i++) {
+            if (allRows[i].cells.length > 2) {
+                var pos = document.getElementsByClassName('delete_column')[0].offsetLeft
+                allRows[i].deleteCell(pos / 52);
+                if (pos > 0) {
+                    document.getElementsByClassName('delete_column')[0].style.left = pos - 52 + 'px'
+                }
+            }
+            else if (allRows[i].cells.length = 2) {
+                allRows[i].deleteCell(pos / 52);
+                document.getElementsByClassName('delete_column')[0].classList.add('disabled')
+            }
+        }
+    }
+
+    document.getElementById('squares').onmousemove = mouseMove
+
+    function mouseMove() {
+        var table = document.getElementById('my_table'), rIndex, cIndex;
+
+        for (var i = 0; i < table.rows.length; i++) {
+            for (var j = 0; j < table.rows[i].cells.length; j++) {
+                table.rows[i].cells[j].onmouseover = function () {
+                    rIndex = this.parentElement.rowIndex;
+                    cIndex = this.cellIndex + 1;
+                    console.log("Row : " + rIndex + " , Cell : " + cIndex);
+                    document.getElementsByClassName('delete_column')[0].style.left = 52 * (cIndex - 1) + 'px'
+                    document.getElementsByClassName('delete_row')[0].style.top = 52 * (rIndex) + 'px'
+                };
+            }
+        }
+    }
+</script>
+</body>
+</html>
